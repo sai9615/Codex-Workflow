@@ -1,0 +1,8 @@
+# Select with: codex --profile native-workflows
+# Defaults only. Explicit overrides/custom agents can take precedence.
+model = "gpt-6.1-sol"
+model_reasoning_effort = "medium"
+
+[agents]
+default_subagent_model = "gpt-6.1-sol"
+default_subagent_reasoning_effort = "medium"

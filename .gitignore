@@ -1,0 +1,14 @@
+dist/
+.local/
+node_modules/
+.DS_Store
+.env
+.env.*
+*.log
+.obsidian/
+Obsidian Vault/
+workflow-notes/
+tracking/
+Evidence/
+Logs/
+Tasks/
