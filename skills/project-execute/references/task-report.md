@@ -4,10 +4,11 @@ Keep the user-facing report simple but sufficiently detailed to review. Put raw 
 
 - Task ID and objective; current outcome.
 - What changed and which files were affected.
-- What the developer, tester and reviewer each did; include worker identifiers when available.
+- Planning assessment and actual strategy; significant deviations and reasons.
+- What each implementation/validation/review actor did, including combined roles or direct coordinator work and why required independence was satisfied; include actor/session identifiers and reuse decisions when available.
 - Actual validation results, material warnings/skips, reviewer findings and their disposition.
 - Known limitations and unresolved decisions.
-- Observed time and provider usage, including retries and auxiliary agents when available. Keep missing totals unknown; cached input/reasoning subsets must not be double counted.
+- Agent spawns and follow-up invocations; observed wall time and input/output/cached tokens, including root coordination, retries, corrections, compaction and auxiliary agents where exposed. Record source and aggregation scope; keep missing totals unknown and do not double count cumulative snapshots or cached-input/reasoning subsets. Subscription quota consumption is separate; do not infer it from tokens or cache hits.
 - Canonical evidence and exact candidate/diff identity.
 - Proposed next task, why it is next, and any change in authority required.
 

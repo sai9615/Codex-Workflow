@@ -3,7 +3,9 @@ name: project-deliver
 description: Publish accepted project changes under explicit authority and verify exact-commit CI and authorized deployment. Use when the user invokes delivery or authorizes commit, push, merge, release or deployment.
 ---
 
-Keep the invoking conversation as coordinator. Run each delivery invocation in a fresh native worker with a compact assignment and worker marker; never recursively launch this workflow. If delegation is unavailable, report the limitation before substituting another execution method.
+Keep the invoking conversation as coordinator. Apply the cross-project efficiency policy: reuse the approved complexity/risk/context assessment and choose direct delivery or a focused native specialist only when delegation adds value. No automatic fresh workflow/task worker or arbitrary agent-count limit. Prefer direct coordinator-to-specialist delegation; record the reason for an exceptional coordinating worker and prevent recursive dispatch. Verify native capability and model/effort support before delegating; required independence and project safeguards remain binding.
+
+Reuse a suitable delivery session through exposed follow-up tools after verifying role history, scope, current evidence, settings and authority. Start fresh for stale/excessive context or risk requiring a new perspective. Give only relevant canonical pointers, candidate, destination/effects and authority; avoid full transcript inheritance and repeated unchanged-document reads. Checkpoint before supported compaction/handoff; verify actual client support before relying on persistent resume. Reuse does not establish lower token or subscription usage. Missing capabilities must be reported, not replaced by external model calls or weakened checks.
 
 Read applicable instructions, task acceptance, the exact candidate and publication authority. Inspect branch, destination, scoped diff and unrelated dirty work. Inspect pipeline triggers before publication, including deployments caused automatically by a push. Do not assume tests prove a push or deployment has no harmful effects.
 

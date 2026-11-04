@@ -16,6 +16,7 @@ For a new project, these records may be combined when small, but must satisfy [t
 ## Task record
 
 - ID, revision, objective, dependencies and status.
+- Planning assessment: complexity, risk, context/dependencies, acceptance-specific tests, required independence, initial agent strategy and delegation rationale. Reuse during execution; record significant strategy changes and their triggering evidence.
 - Approved scope, affected files and exclusions.
 - Authorization: user decision, covered actions, conditions and resources.
 - Acceptance criteria and required validation/review.
@@ -27,7 +28,7 @@ For a new project, these records may be combined when small, but must satisfy [t
 
 ## Checkpoint
 
-Record project/task identity, governing instructions and approved revision, stage, completed work, evidence locations, worker thread IDs when available, known active tools/processes, unresolved issues and exact next action. Record usage/time only when observed; unknown stays unknown.
+Record project/task identity, governing instructions and approved revision, stage, completed work, evidence locations, worker thread IDs when available, known active tools/processes, unresolved issues and exact next action. Record session role history and reuse suitability, requested/observed settings, invocation/attempt identities and usage/time only when observed; unknown stays unknown. Keep token counters separate from subscription quota and avoid cumulative/subset double counting.
 
 At resume, re-read governing records and inspect checkout/instruction/evidence drift. A checkpoint is not permission to duplicate work, steal ownership, replay an approval or assume an interrupted process exited.
 

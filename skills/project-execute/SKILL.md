@@ -3,11 +3,22 @@ name: project-execute
 description: Coordinate approved project tasks through development, testing, independent review and evidence-backed reporting. Use when the user asks to launch the implementation workflow or resume authorized execution.
 ---
 
-Keep the invoking conversation as coordinator. Start a fresh native workflow-worker thread with a compact assignment and an explicit worker marker; never recursively launch the same workflow. Give each task a new task thread. Within that task, use sequential developer, tester and fresh reviewer threads where native nesting and capacity support them. Verify these capabilities before dispatch. If this topology is unavailable, explain it and ask before changing the requested topology; do not silently flatten it, launch external model sessions or change global settings. Separate native threads are not a promise of independently managed top-level UI sessions.
+Keep the invoking conversation as coordinator and apply this efficiency policy to every project using the skill. Reuse the approved planning assessment: complexity, risk, dependencies, testing and required independence. If it is absent, record a concise assessment in the existing task record before implementation. Choose the simplest strategy that satisfies those requirements; no automatic workflow/task-worker layers or arbitrary agent-count limits. Prefer direct coordinator-to-specialist delegation. A coordinating worker is exceptional and needs a recorded benefit and explicit nonrecursive assignment.
+
+Verify exposed native delegation/follow-up tools, capacity, permissions and model/effort support before dispatch. Reassess only when material findings, changed requirements/dependencies/risk or context condition justify it; record significant deviations and escalate changes that exceed authority. If required independence or a specifically mandated topology cannot be provided, report the gap before dependent work. Do not silently weaken safeguards, launch external model sessions or change global settings. Separate threads are not independently managed top-level UI sessions.
 
 Read applicable instructions, the canonical tracker, approved task revisions and existing checkpoints. A proposed or ready task is not permission to execute. Verify dependencies, scope, checkout/baseline and unrelated dirty work. Preserve existing changes and evidence. Keep one writer per task checkout; use disposable isolation when supported, but do not assume a clean worktree contains the user's uncommitted work.
 
-Developer implements the approved task and records the candidate/diff. Tester validates acceptance criteria using appropriate actual checks; do not weaken tests to manufacture a pass. Reviewer independently inspects the task, exact candidate and raw validation evidence in a fresh context, without relying only on the developer summary. Give specialists minimal relevant context, not the entire coordinator transcript.
+Every task receives implementation, appropriate validation and review. Use the planning strategy as the starting point:
+- Simple, low risk: developer implements and validates; coordinator inspects the actual candidate/diff and raw evidence.
+- Normal: developer implements and runs relevant tests; independent reviewer examines requirements, candidate and validation evidence.
+- Complex or high risk: developer implements; independent tester validates acceptance criteria; independent reviewer examines the changes and evidence.
+
+Stronger project requirements take precedence. Complexity and risk are separate; small sensitive changes can need independent testing and review. The coordinator may perform bounded implementation when justified, but its own review is not independent verification. Never weaken tests or omit essential independent verification to save usage. Parallelize only independent work with a concrete benefit and safe ownership; preserve one writer per checkout.
+
+Prefer reusing a relevant developer, tester or reviewer session through available native follow-up tools. Check task/project scope, role history, context freshness, current candidate and model/permission compatibility. Never reuse an implementation session as its own independent tester/reviewer. A reviewer can revisit corrections or related tasks but must inspect the current requirements, actual diff and raw evidence on every pass; prior opinions and developer summaries are insufficient. Use fresh reviewers when architectural significance, trust-boundary risk, anchoring or context contamination warrants it. Start fresh for excessive/outdated context; reuse is not presumed cheaper.
+
+Give each specialist only the exact project/task authority pointers, scoped objective, relevant files, baseline/candidate identity, criteria and evidence links. Prefer bounded assignments over full-history forks when supported. Store raw logs once and return concise findings. Avoid rereading unchanged material after checking relevant identities; re-read affected instructions and records on drift. Before supported compaction or handoff, checkpoint decisions, implementation history, findings and active/uncertain work. Verify client support before relying on resumption or compaction; a saved thread does not restore files, processes or approvals.
 
 Role instructions do not enforce read-only permissions: children inherit the parent sandbox/provider. If separately enforced reviewer isolation is required, verify an available restricted session and boundary before running; otherwise report the gap. Do not claim stronger sandbox guarantees from skill instructions alone.
 
@@ -19,7 +30,13 @@ At an agreed resource boundary, cooperatively checkpoint and request continuatio
 
 After EACH task, use [the task report](references/task-report.md), return to the coordinator and wait for the user's explicit result/continuation decision. Never auto-accept the result or start the next task. If the reply is ambiguous, clarify only that decision. Permission for another task does not imply commit, push, merge or deployment authority.
 
-Invoke project-deliver in a fresh worker only when the necessary publication actions and automatic deployment effects are authorized. Native CI observation is allowed within the current task's read scope; passing tests alone never authorizes publication. End with a durable checkpoint and an accurate awaiting-approval, completed, partial or blocked outcome.
+Invoke project-deliver only when the necessary publication actions and automatic deployment effects are authorized; choose direct or delegated delivery using its risk and context assessment. Native CI observation is allowed within the current task's read scope; passing tests alone never authorizes publication. End with a durable checkpoint and an accurate awaiting-approval, completed, partial or blocked outcome.
+
+## Usage and efficiency evidence
+
+Record task/attempt and actor IDs, role, spawn versus follow-up, reuse/fresh rationale, requested and observed model/effort, wall time, tests/review/correctness, and native input/output/cache counters when available. Include root coordination, failed attempts, corrections, compaction and auxiliary work where observable. Preserve unknowns; do not sum cumulative snapshots or count cached-input/reasoning subsets twice. Token measurements and cache hits do not establish subscription quota savings. Avoid redundant tools/analysis and polling; use native events/waits when supported. Unexpected resource needs follow the existing authorization/budget checkpoint rules, not invented thresholds or automatic restarts.
+
+For comparisons, use [the benchmark protocol](references/efficiency-validation.md). Start with offline checks; costly live comparisons require bounded authority. Do not claim efficiency improvements from agent counts, bytes or unmeasured reuse.
 
 ## Documentation maintenance
 

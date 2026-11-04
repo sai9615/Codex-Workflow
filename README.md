@@ -1,14 +1,20 @@
 # Native Codex Workflows
 
-Three reusable Codex skills help you plan a project, carry out an approved task, and publish an accepted result. Your main chat stays in charge while fresh native agents handle focused work.
+Three reusable Codex skills help you plan a project, carry out an approved task, and publish an accepted result. Your main chat assesses each task and delegates directly to focused native agents when their benefit justifies the cost. Relevant role sessions can be reused; validation, required independence and human approval remain part of every project using these skills.
 
 | Skill | Ask it to do | What you get |
 | --- | --- | --- |
 | `project-plan` | Turn your idea or discussion into a workable plan | Requirements, design, bounded tasks and a validation plan |
-| `project-execute` | Complete a named, approved task | Development, independent tests, fresh review and a result report |
+| `project-execute` | Complete a named, approved task | Risk-appropriate development, validation, review and a result report |
 | `project-deliver` | Commit or publish an accepted result | A scoped commit/push and verification of the exact published revision |
 
 These are instructions for Codex, with a small local installer. They do not run a separate agent service. You sign into Codex normally; credentials and chat history are never included in this repository.
+
+## Default workflow
+
+The optimized workflow is the default for all three skills. The main chat keeps ownership of the task, uses the planning assessment to decide when specialists are useful, and delegates directly when needed. Relevant sessions can be resumed after checking their scope and context. Required testing, independent verification, user acceptance and publication approvals stay in place.
+
+Local validation has exercised the policy on a synthetic comparison and a historical application-validation replay. Both retained their required tests and independent review. These are bounded observations with setup, context, cache and accounting limitations; they do not establish a general percentage saving or subscription-quota reduction. Measure complete task usage in your own runtime. Private project records and raw evidence are not part of this package.
 
 ## Start on a new computer
 
@@ -43,7 +49,7 @@ Start with a clear goal. You can use the skill picker or mention the skill by na
 ```text
 Goal: Add a searchable notes page to this app.
 Use $project-plan. Read this project's AGENTS.md and existing docs first.
-Use native workflow agents for this planning task. Keep this chat as coordinator.
+Keep this chat as coordinator. Delegate focused planning work only when useful.
 Prepare a small design and task list. Bring the concrete plan back here before implementation.
 ```
 
@@ -51,7 +57,7 @@ Review the plan, resolve any open decisions, then authorize one named task:
 
 ```text
 Approve the plan for TASK-001 only. Goal: Complete that task's acceptance criteria.
-Use $project-execute with native workflow, task, developer, tester and reviewer agents.
+Use $project-execute with the planned risk-appropriate strategy and direct native specialists when needed.
 Preserve unrelated changes. Bring questions and approvals to this main chat.
 Report the exact tested result for my acceptance. No commit, push or deployment yet.
 ```
@@ -59,7 +65,7 @@ Report the exact tested result for my acceptance. No commit, push or deployment 
 After accepting a result, name the publication actions and destination you want:
 
 ```text
-I accept TASK-001. Use $project-deliver with a fresh native delivery worker.
+I accept TASK-001. Use $project-deliver; choose direct delivery or a suitable native specialist based on risk and context.
 Commit only its reviewed files and push to my existing REPOSITORY on BRANCH.
 Check automatic pipeline effects first; ask here if deployment effects are outside this scope.
 Verify the remote commit and relevant CI. Do not merge or deploy.
@@ -95,13 +101,23 @@ The Markdown under `skills/*/references/` ships because the skills need those ge
 
 ## How work and approvals behave
 
-Execution uses a fresh workflow worker, a fresh task worker, then sequential developer, tester and fresh reviewer roles where the host supports that nesting/capacity. All user questions and permission requests return to the main chat. Workers may act within their existing scope, but cannot decide a missing user approval themselves.
+Planning records complexity, risk, dependencies, required tests/independence and an initial agent strategy. Execution reuses it and records material changes. Simple low-risk tasks usually combine development and validation with coordinator verification; normal tasks add an independent reviewer; complex/high-risk tasks normally separate developer, tester and reviewer. Stronger project requirements take precedence. There is no fixed agent-count limit, mandatory workflow/task-worker layer or automatic fresh agent per stage.
+
+The coordinator prefers direct delegation and suitable role-session reuse after checking current scope, role history, context and settings. An implementation session cannot independently verify its own work. Reused reviewers inspect the current diff and raw evidence; fresh reviewers remain appropriate for architecture, trust-boundary risk or contaminated context. Native follow-up, persistent resume and compaction differ by runtime/client: verify exposed support, preserve checkpoints and report gaps. A supported interface does not prove reuse savings.
+
+All user questions and permission requests return to the main chat. Workers may act within their existing scope, but cannot decide a missing user approval themselves.
 
 If an approval is part of the test, the coordinator must show you the actual request and wait for your answer. A worker's proposal reaching the coordinator is not a user approval. Simulated refusals, actual user refusals, chat approvals and native sandbox dialogs must be reported separately.
 
 Tests and reviewer verdicts do not accept your result or authorize the next task. Delivery needs explicit scope, and a push can trigger CI or deployment. A workflow checks those effects before publication. A checkpoint records progress; resumption checks the current files and active/uncertain work before repeating anything.
 
-Role instructions do not create separate OS sandboxes, and this package does not guarantee quota/crash recovery, phone approvals, background monitoring, token accounting or deployed health. If native delegation is unavailable, Codex must report the gap rather than silently change the workflow. High reasoning needs prior scoped approval; the default remains Sol / Medium.
+Role instructions do not create separate OS sandboxes, and this package does not guarantee quota/crash recovery, phone approvals, background monitoring, token accounting or deployed health. If native delegation is unavailable, report the gap; direct work is suitable only when all required checks and independence can still be satisfied. High reasoning needs prior scoped approval; the default remains Sol / Medium.
+
+## Efficiency evidence and adoption
+
+Record agent spawns/follow-ups, reuse decisions, observed input/output/cached tokens and elapsed time, including coordination, failures and corrections where exposed. Missing telemetry stays unknown; cached/reasoning subsets and cumulative counters must not be double counted. Subscription quota consumption is separate from token measurements. No savings are established merely by reusing a session or reducing agent count. See the [benchmark protocol](skills/project-execute/references/efficiency-validation.md) for cheap decision checks followed by separately bounded native comparisons.
+
+These defaults apply across projects loading the updated skills. Existing project-local copies or stricter project instructions require explicit reconciliation; updating this repository does not update installed copies or running chats. The installer intentionally refuses conflicting destinations. Back up and review a concrete replacement before separately authorized adoption; do not delete a conflicting installation to bypass its checks. Publication remains separately authorized.
 
 ## Validate and build the portable package
 

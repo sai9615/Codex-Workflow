@@ -9,6 +9,7 @@ Keep this record in the existing project's evidence location, linked from its ta
 - Required CI checks: run IDs/links, correlated SHA, actual status/conclusion and material logs.
 - Authorized deployment: environment, version/artifact identity, correlated SHA and agreed health-check results.
 - Failed attempts/retries and their authority; unknown or incomplete verification.
+- Actors, spawn/follow-up/reuse decisions, requested/observed settings, observed time and input/output/cached tokens or unknowns, including coordination and failed attempts where exposed. Avoid duplicate cumulative/subset counts; subscription quota is separate from tokens.
 - Recovery approach and actions actually performed.
 - Final outcome and next user decision.
 
