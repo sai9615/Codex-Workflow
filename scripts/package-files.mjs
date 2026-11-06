@@ -12,6 +12,7 @@ export const packageFiles = [
   'skills/project-plan/references/documentation-contract.md',
   'skills/project-execute/SKILL.md',
   'skills/project-execute/references/task-report.md',
+  'skills/project-execute/references/reviewer-package.md',
   'skills/project-execute/references/efficiency-validation.md',
   'skills/project-deliver/SKILL.md',
   'skills/project-deliver/references/delivery-record.md',
