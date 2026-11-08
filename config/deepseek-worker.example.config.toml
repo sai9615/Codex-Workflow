@@ -1,0 +1,39 @@
+# INACTIVE EXAMPLE: not installed by scripts/install.mjs.
+# Read the DeepSeek worker reference; live execution is blocked until its gates pass.
+# A future authorized copy uses ~/.codex/deepseek-worker.config.toml (top-level keys).
+# Catalog/client compatibility, output/request caps and credential isolation are unverified.
+model_provider = "deepseek_worker"
+model = "deepseek-flash"
+# Explicit example only: each worker/model/high request needs bounded authority.
+model_reasoning_effort = "high"
+web_search = "disabled"
+show_raw_agent_reasoning = true
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+allow_login_shell = false
+agents.enabled = false
+
+[model_providers.deepseek_worker]
+name = "DeepSeek optional worker"
+base_url = "https://api.deepseek.com"
+wire_api = "responses"
+env_key = "DEEPSEEK_API_KEY"
+requires_openai_auth = false
+supports_websockets = false
+request_max_retries = 0
+stream_max_retries = 0
+stream_idle_timeout_ms = 60000
+
+[sandbox_workspace_write]
+network_access = false
+
+[shell_environment_policy]
+inherit = "core"
+experimental_use_profile = false
+ignore_default_excludes = false
+
+[shell_environment_policy.filters]
+"DEEPSEEK_API_KEY" = "exclude"
+"*KEY*" = "exclude"
+"*TOKEN*" = "exclude"
+"*SECRET*" = "exclude"

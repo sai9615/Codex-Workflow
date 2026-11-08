@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "provider": "deepseek",
+  "taskId": "offline-example",
+  "candidateSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "role": "testing",
+  "model": "deepseek-flash",
+  "effort": "high",
+  "instructions": "Return a short test plan as text. Do not request tools or credentials.",
+  "input": [{"role": "user", "content": "Offline example. Replace with the exact explicitly authorized task context."}],
+  "maxOutputTokens": 256,
+  "timeoutMs": 30000
+}

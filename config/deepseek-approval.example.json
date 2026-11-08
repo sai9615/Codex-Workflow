@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "id": "REQUIRES-USER-AUTHORIZATION",
+  "approved": false,
+  "taskId": "offline-example",
+  "candidateSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "requestSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "expiresAt": null,
+  "maxRequests": 1,
+  "maxUsd": null,
+  "pricing": {
+    "verified": false,
+    "model": "deepseek-flash",
+    "currency": "USD",
+    "source": "https://api-docs.deepseek.com/",
+    "verifiedAt": null,
+    "expiresAt": null,
+    "inputMissUsdPerMillion": null,
+    "inputHitUsdPerMillion": null,
+    "outputUsdPerMillion": null,
+    "billingInputTokenCeiling": null,
+    "billingOutputTokenCeiling": null
+  }
+}

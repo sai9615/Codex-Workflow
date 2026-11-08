@@ -23,3 +23,32 @@ Record subscription/quota observations separately with capture times and concurr
 ## Decision and reporting
 
 Compare correctness, required tests, reviewer defect detection and approval/recovery safeguards first. A missed required check, independence failure or incorrectly accepted candidate disqualifies an apparent saving. Then compare total measured work, time and context reuse. Report differences with sample size, failed attempts, telemetry coverage, cache/order effects and limitations. No numerical savings claim without comparable measurements; no generalization from one fixture to all projects. Retain the old policy/candidate and evidence for narrow recovery. Adoption and publication are separate decisions.
+
+## New DeepSeek Flash versus Pro comparison
+
+Reuse historical evidence as historical context; never rerun a completed old-flow experiment to manufacture a matched baseline. If the old task/model/roles/telemetry do not match, state that no valid Codex reduction percentage is available. API connectivity checks are not benchmark arms and must not be repeated as setup.
+
+Freeze one new pure-function task, candidate snapshot, requirements, immutable correctness oracle and role prompts before either arm. Use identical fresh starting bytes for Flash and Pro, high effort, output/time caps, permissions and required tests. Model is the intended independent variable; this is a model comparison, unlike the same-model workflow comparison above. Counterbalance only within approved resources; one pair is exploratory. Never give an arm the other arm's solution/verdict.
+
+Each arm is sequential developer → separate tester → separate reviewer → risk-based Codex verification. Developer emits bounded artifacts; the coordinator checks paths/content before applying. Tester contributes additional tests but cannot modify/weaken the oracle; main runs tests and captures exit/stdout/stderr on exact bytes. Reviewer gets the compact package and source/raw evidence in an independent context. For review-quality measurement, include a separately labelled seeded regression challenge with an unchanged correct reference, distinguishing experimental fixtures from actual defects. Score correct defect localization, false positives, boundary/regression tests, and whether a defective candidate was incorrectly approved.
+
+Allow a bounded correction and delta-first rereview only within exact authority; preserve failed/truncated/timed-out attempts and reservations. Stop on malformed artifacts, missing usage, role contamination, resource exhaustion or failed correctness criteria. Reuse selected same-role context as explicit text replay only; no provider-side session claim. Source packages/prompts and corrections are material paid/data scope; no-agent instructions block live role calls.
+
+Report per-role provider tokens (input/output/cache/reasoning subsets), model/requested and provider-reported effort or unknown, estimated cost at stated rates versus actual reconciled charges, elapsed time, attempts/corrections, role-context reuse, executed tests/coverage, defects/false positives and final correctness. Include Codex coordinator/final-verification counters when exposed; unknown totals stay unknown. Compare Flash/Pro cost and time only after correctness/quality gates. Subscription quota cannot be derived from provider prices or token estimates. Keep the existing task/evidence registry as authority, not another benchmark status system.
+
+## Scoped journal accounting
+
+`scripts/journal-aggregate.mjs` turns helper attempt journals into a scoped summary; it is read-only and performs no network or credential access. Run it from the repository root:
+
+~~~sh
+node scripts/journal-aggregate.mjs --journal-dir PRIVATE_DIR [--scope-map scope.json]
+~~~
+
+Accounting convention:
+
+1. Scopes are `preparation`, `execution`, `correction` and `reporting`; a scope map assigns taskIds/approvalIds, unmapped attempts stay `unscoped` and are never guessed.
+2. One final record per attempt: a result supersedes its reservation; reserved-only attempts are `unsettled` with usage unknown, never zero.
+3. Buckets are scope × provider × model. Per-scope and grand totals are labeled arithmetic aggregates across providers for magnitude only; conclusions about one provider must use its own bucket, and cross-provider token substitution (treating one provider's tokens as another's) remains prohibited.
+4. Cached input and reasoning output are reported as subsets only and are never folded into input/output totals.
+5. Money uses 9-decimal nanodollar strings with integer arithmetic; `estimatedUsd` values are peak-rate estimates and `actualChargeUsd: null` stays `unreconciledAttempts`, not zero.
+6. Coordinator counter snapshots (Codex/Kimi native tokens) are recorded separately per actor with capture timestamps; use one final total or nonoverlapping deltas per actor scope, never both, and never merge them into provider buckets.

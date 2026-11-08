@@ -7,5 +7,6 @@ This repository distributes three reusable skills, their references, an optional
 - Preserve unrelated work. Do not change installed personal skills, global configuration or another project while maintaining this package.
 - Use Node 24.22.1 within Node 24. There are no package dependencies to install. Run npm run test:run and npm run build before committing. Preserve warnings and actual failures; static and installer tests do not establish live Codex behavior.
 - Native workflow agents request gpt-6.1-sol / medium. High requires prior scoped user approval. Report unavailable runtime telemetry without claiming enforcement.
+- Explicitly authorized DeepSeek workers follow the hybrid execution contract: Flash for routine work, Pro for complexity/risk, high reasoning by default. This does not change the Codex coordinator provider. Respect solo/no-agent instructions and report missing independent review; never fabricate separate roles.
 - Use RTK for shell commands when available. Main handles any required sandbox approval; workers return concrete proposals without invoking escalation tools.
 - Publish only to the user-authorized repository/branch after inspecting the exact file list and automatic effects. No merge, deployment or provider connection follows from a successful test.
