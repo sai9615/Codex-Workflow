@@ -12,7 +12,7 @@ export const packageFiles = [
   'scripts/worker-budget.mjs', 'scripts/envelope-check.mjs',
   'test/install.test.mjs', 'test/package.test.mjs', 'test/deepseek-worker.test.mjs',
   'test/journal-aggregate.test.mjs', 'test/context-check.test.mjs', 'test/worker-result-check.test.mjs',
-  'test/worker-budget.test.mjs', 'test/envelope-check.test.mjs',
+  'test/worker-budget.test.mjs', 'test/envelope-check.test.mjs', 'test/review-regressions.test.mjs',
   'skills/project-plan/SKILL.md',
   'skills/project-plan/references/project-records.md',
   'skills/project-plan/references/documentation-contract.md',

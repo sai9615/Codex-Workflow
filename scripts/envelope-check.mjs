@@ -19,7 +19,15 @@ const moneyToNano = x => {
   const [w, f = ''] = x.split('.');
   return BigInt(w) * NANOD + BigInt((f + '000000000').slice(0, 9));
 };
-const nanoToUsd = n => (n / NANOD).toString() + '.' + (n % NANOD).toString().padStart(9, '0');
+const nanoToUsd = n => {
+  if (n === null) return null;
+  if (n === 0n) return '0.000000000';
+  const neg = n < 0n;
+  const abs = neg ? -n : n;
+  const whole = (abs / NANOD).toString();
+  const frac = (abs % NANOD).toString().padStart(9, '0');
+  return `${neg ? '-' : ''}${whole}.${frac}`;
+};
 
 // envelope: { maxRequests: int >= 1, totalCapUsd: money string } — closed shape.
 export function validateEnvelope(envelope) {
@@ -33,28 +41,48 @@ export function validateEnvelope(envelope) {
 export function checkEnvelope({ envelope, summary, plannedReservedUsd }) {
   const env = validateEnvelope(envelope);
   const plannedNano = moneyToNano(plannedReservedUsd);
-  const totals = summary && summary.totals;
-  if (!totals || !Number.isSafeInteger(totals.attempts)) fail('E_ENVELOPE');
+  if (!summary || typeof summary !== 'object' || Array.isArray(summary)) fail('E_ENVELOPE');
+  const totals = summary.totals;
+  if (!totals || !Number.isSafeInteger(totals.attempts) || totals.attempts < 0) fail('E_ENVELOPE');
+  if (!Number.isSafeInteger(summary.attempts) || summary.attempts !== totals.attempts) fail('E_ENVELOPE');
+
+  const usageUnknownAttempts = totals.usageUnknownAttempts;
+  const estimatedUsdUnknownAttempts = totals.estimatedUsdUnknownAttempts;
+  const reservedUsdUnknownAttempts = totals.reservedUsdUnknownAttempts;
+  const unreconciledAttempts = summary.unreconciledAttempts;
+  for (const v of [usageUnknownAttempts, estimatedUsdUnknownAttempts, reservedUsdUnknownAttempts, unreconciledAttempts]) {
+    if (!Number.isSafeInteger(v) || v < 0 || v > totals.attempts) fail('E_ENVELOPE');
+  }
+
+  const unknowns = {
+    usageUnknownAttempts,
+    estimatedUsdUnknownAttempts,
+    reservedUsdUnknownAttempts,
+    unreconciledAttempts,
+  };
+
   let heldNano = totals.reservedUsd === null ? null : moneyToNano(totals.reservedUsd);
   const knownNano = totals.estimatedUsd === null ? null : moneyToNano(totals.estimatedUsd);
-  const unknowns = {
-    usageUnknownAttempts: totals.usageUnknownAttempts,
-    estimatedUsdUnknownAttempts: totals.estimatedUsdUnknownAttempts,
-    unreconciledAttempts: summary.unreconciledAttempts,
-  };
+
+  if (totals.attempts === 0) {
+    if (usageUnknownAttempts !== 0 || estimatedUsdUnknownAttempts !== 0 ||
+        reservedUsdUnknownAttempts !== 0 || unreconciledAttempts !== 0 ||
+        (totals.reservedUsd !== null && moneyToNano(totals.reservedUsd) !== 0n) ||
+        (knownNano !== null && knownNano !== 0n)) {
+      fail('E_ENVELOPE');
+    }
+    heldNano = 0n;
+  } else if (reservedUsdUnknownAttempts > 0 || heldNano === null) {
+    return { ok: false, code: 'E_ENVELOPE_UNKNOWN', reason: 'held reservations partially or fully unknown; reconcile journals before dispatch',
+      usedRequests: totals.attempts, remainingRequests: env.maxRequests - totals.attempts, unknowns };
+  }
+
   const remainingRequests = env.maxRequests - totals.attempts;
   if (remainingRequests < 1) {
     return { ok: false, code: 'E_ENVELOPE_REQUESTS', reason: 'authorized request count exhausted; obtain fresh user authority before dispatch',
       usedRequests: totals.attempts, remainingRequests: 0, unknowns };
   }
-  // Held reservations are worst-case liabilities; unknown actual charges make them the
-  // conservative basis. If held is unknown (null), block rather than guess — except when
-  // there are zero attempts, where held is exactly zero, not unknown (F-KIMI-02).
-  if (heldNano === null && totals.attempts === 0) heldNano = 0n;
-  if (heldNano === null) {
-    return { ok: false, code: 'E_ENVELOPE_UNKNOWN', reason: 'held reservations unknown; reconcile journals before dispatch',
-      usedRequests: totals.attempts, remainingRequests, unknowns };
-  }
+
   const remainingNano = env.capNano - heldNano;
   if (plannedNano > remainingNano) {
     return { ok: false, code: 'E_ENVELOPE_BUDGET', reason: 'planned reservation exceeds remaining authorized budget; obtain fresh user authority before dispatch',

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { planAllowance, checkAllowance, BUDGET_DEFAULTS, BUDGET_CEILINGS, MODEL_LIMITS, FINAL_ANSWER_RESERVE } from '../scripts/worker-budget.mjs';
+import { planAllowance, checkAllowance, BUDGET_DEFAULTS, BUDGET_CEILINGS, MODEL_LIMITS, ANSWER_HEADROOM_TOKENS } from '../scripts/worker-budget.mjs';
 
 const code = expected => e => e.code === expected;
 const base = { role: 'development', model: 'deepseek-flash', effort: 'high', complexity: 'normal', risk: 'normal' };
@@ -11,7 +11,8 @@ test('defaults stay the production floor for routine low-effort work', () => {
   assert.equal(p.maxOutputTokens, BUDGET_DEFAULTS.maxOutputTokens);
   assert.equal(p.timeoutMs, BUDGET_DEFAULTS.timeoutMs);
   assert.equal(p.escalation, null);
-  assert.match(p.rationale, /final-answer reserve/);
+  assert.equal(p.answerHeadroomTokens, ANSWER_HEADROOM_TOKENS);
+  assert.match(p.rationale, /advisory answer headroom/);
 });
 
 test('high-effort roles get measured headroom above the 8192 truncation point', () => {
@@ -19,7 +20,7 @@ test('high-effort roles get measured headroom above the 8192 truncation point', 
   assert.equal(p.tier, 1);
   assert.ok(p.maxOutputTokens > 8192);
   assert.ok(p.timeoutMs > 60000);
-  assert.ok(p.maxOutputTokens >= FINAL_ANSWER_RESERVE * 2);
+  assert.ok(p.maxOutputTokens >= ANSWER_HEADROOM_TOKENS * 2);
   assert.match(p.rationale, /truncation/);
 });
 

@@ -44,9 +44,9 @@ function compareKeys(a, b) {
 }
 
 function sortObject(obj) {
-  const out = {};
-  for (const k of Object.keys(obj).sort(compareKeys)) out[k] = obj[k];
-  return out;
+  return Object.fromEntries(
+    Object.keys(obj).sort(compareKeys).map(k => [k, obj[k]])
+  );
 }
 
 function readUsage(usage, code) {
@@ -68,10 +68,14 @@ function readUsage(usage, code) {
 }
 
 function attemptKey(rec) {
-  const c = rec.candidateSha256;
-  const r = rec.requestSha256;
-  if (typeof c === 'string' && typeof r === 'string') return `${c}|${r}`;
-  return `${rec.approvalId}|${rec.taskId}|${rec.provider}|${rec.model}`;
+  return JSON.stringify([
+    rec.approvalId,
+    rec.taskId,
+    rec.provider,
+    rec.model,
+    rec.candidateSha256 ?? null,
+    rec.requestSha256 ?? null,
+  ]);
 }
 
 function normalizeRecord(raw, fileKind, file) {
@@ -101,9 +105,15 @@ function normalizeRecord(raw, fileKind, file) {
   let usage = null;
   if (fileKind === 'result') usage = readUsage(raw.usage, code);
   const reservedUsd = usdToNano(raw.reservedUsd ?? null, 'E_JOURNAL_MONEY', `${file} reservedUsd`);
+  if (reservedUsd !== null && reservedUsd < 0n) {
+    throw new JournalError('E_JOURNAL_MONEY', `${file} reservedUsd: must be non-negative`);
+  }
   const estimatedUsd = fileKind === 'result'
     ? usdToNano(raw.estimatedUsd ?? null, 'E_JOURNAL_MONEY', `${file} estimatedUsd`)
     : null;
+  if (estimatedUsd !== null && estimatedUsd < 0n) {
+    throw new JournalError('E_JOURNAL_MONEY', `${file} estimatedUsd: must be non-negative`);
+  }
   return {
     fileKind,
     file,
@@ -189,10 +199,18 @@ function finalizeBucket(b) {
   });
 }
 
+function scopeValue(scopeMap, id) {
+  if (scopeMap instanceof Map) return scopeMap.get(id);
+  if (scopeMap && typeof scopeMap === 'object') {
+    return Object.prototype.hasOwnProperty.call(scopeMap, id) ? scopeMap[id] : undefined;
+  }
+  return undefined;
+}
+
 function resolveScope(att, scopeMap) {
   if (!scopeMap) return 'unscoped';
-  const byTask = scopeMap[att.taskId];
-  const byApproval = scopeMap[att.approvalId];
+  const byTask = scopeValue(scopeMap, att.taskId);
+  const byApproval = scopeValue(scopeMap, att.approvalId);
   const pick = byTask ?? byApproval;
   if (pick === undefined || pick === null) return 'unscoped';
   if (!SCOPES.includes(pick)) {
@@ -209,6 +227,17 @@ export function summarizeAttempts(records, scopeMap = null) {
     if (r && r.fileKind === 'reserved' || r && r.fileKind === 'result') return r;
     throw new JournalError('E_JOURNAL_INPUT', 'records must be normalized attempts');
   });
+  const metadataByScope = new Map();
+  for (const att of normalized) {
+    const scope = JSON.stringify([att.approvalId, att.provider]);
+    const tuple = JSON.stringify([att.taskId, att.model, att.candidateSha256 ?? null, att.requestSha256 ?? null]);
+    const prevTuple = metadataByScope.get(scope);
+    if (prevTuple !== undefined && prevTuple !== tuple) {
+      throw new JournalError('E_JOURNAL_METADATA_MISMATCH',
+        `approvalId/provider scope ${att.approvalId}/${att.provider} has conflicting attempt metadata`);
+    }
+    metadataByScope.set(scope, tuple);
+  }
   const finals = new Map();
   for (const att of normalized) {
     const key = attemptKey(att);
@@ -219,8 +248,8 @@ export function summarizeAttempts(records, scopeMap = null) {
     }
     const winner = att.fileKind === 'result' ? att : prev;
     const loser = winner === att ? prev : att;
-    // Result supersedes reserved but inherits its reservation when the result omits it.
-    if (winner.reservedUsd === null && loser.reservedUsd !== null) {
+    // Result supersedes reserved but must not shrink the reservation known at reserve time.
+    if (loser.reservedUsd !== null && (winner.reservedUsd === null || winner.reservedUsd < loser.reservedUsd)) {
       winner.reservedUsd = loser.reservedUsd;
     }
     finals.set(key, winner);
@@ -233,7 +262,7 @@ export function summarizeAttempts(records, scopeMap = null) {
     const scope = resolveScope(att, scopeMap);
     if (scope === 'unscoped') unscopedAttempts += 1;
     if (att.fileKind === 'result' && att.actualChargeUsd === null) unreconciled += 1;
-    const bucketKey = `${scope}\u0000${att.provider}\u0000${att.model}`;
+    const bucketKey = JSON.stringify([scope, att.provider, att.model]);
     let entry = scoped.get(bucketKey);
     if (!entry) {
       entry = { scope, provider: att.provider, model: att.model, bucket: emptyBucket() };
@@ -248,25 +277,40 @@ export function summarizeAttempts(records, scopeMap = null) {
     if (!g) { g = []; grouped.set(e.scope, g); }
     g.push(e);
   }
-  const scopesOut = {};
+  const scopesOutMap = new Map();
   for (const scope of [...grouped.keys()].sort(compareKeys)) {
     const list = grouped.get(scope).sort((a, b) => {
       const p = compareKeys(a.provider, b.provider);
       return p !== 0 ? p : compareKeys(a.model, b.model);
     });
-    const providersOut = {};
+    const providersOutMap = new Map();
     const totalBucket = emptyBucket();
     for (const e of list) {
-      if (!providersOut[e.provider]) providersOut[e.provider] = {};
-      providersOut[e.provider][e.model] = finalizeBucket(e.bucket);
+      let models = providersOutMap.get(e.provider);
+      if (!models) {
+        models = new Map();
+        providersOutMap.set(e.provider, models);
+      }
+      models.set(e.model, finalizeBucket(e.bucket));
       const tb = totalBucket;
       const b = e.bucket;
       for (const k of ['attempts', 'completed', 'incomplete', 'failed', 'unknown', 'unsettled', 'usageUnknownAttempts', 'inputTokens', 'outputTokens', 'cachedInputTokens', 'reasoningOutputTokens', 'estimatedUsdKnownAttempts', 'reservedUsdKnownAttempts']) tb[k] += b[k];
       tb.estimatedUsdNano += b.estimatedUsdNano;
       tb.reservedUsdNano += b.reservedUsdNano;
     }
-    scopesOut[scope] = { providers: sortObject(providersOut), totals: finalizeBucket(totalBucket) };
+    const providersOut = Object.fromEntries(
+      [...providersOutMap.entries()]
+        .sort(([p1], [p2]) => compareKeys(p1, p2))
+        .map(([provider, models]) => [
+          provider,
+          Object.fromEntries([...models.entries()].sort(([m1], [m2]) => compareKeys(m1, m2))),
+        ])
+    );
+    scopesOutMap.set(scope, { providers: providersOut, totals: finalizeBucket(totalBucket) });
   }
+  const scopesOut = Object.fromEntries(
+    [...scopesOutMap.entries()].sort(([s1], [s2]) => compareKeys(s1, s2))
+  );
   const grand = emptyBucket();
   for (const e of scoped.values()) {
     const b = e.bucket;
@@ -335,12 +379,12 @@ export async function aggregateJournals({ directory, scopeMap = null } = {}) {
     if (typeof scopeMap !== 'object' || Array.isArray(scopeMap)) {
       throw new JournalError('E_JOURNAL_SCOPE_INVALID', 'scopeMap must be an object');
     }
-    map = {};
+    map = new Map();
     for (const [k, v] of Object.entries(scopeMap)) {
       if (!SCOPES.includes(v)) {
         throw new JournalError('E_JOURNAL_SCOPE_INVALID', `invalid scope "${v}" for ${k}`);
       }
-      map[k] = v;
+      map.set(k, v);
     }
   }
   const records = await loadJournalDirectory(directory);

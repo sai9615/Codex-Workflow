@@ -49,8 +49,10 @@ test('unknown held reservations block instead of guessing', () => {
 });
 
 test('an empty journal means exactly zero held, not unknown (F-KIMI-02)', () => {
-  const s = summary({ attempts: 0, unreconciledAttempts: 0 });
-  s.totals = { ...s.totals, attempts: 0, completed: 0, incomplete: 0, reservedUsd: null, reservedUsdUnknownAttempts: 0 };
+  const s = summary({ attempts: 0, unreconciledAttempts: 0, usageUnknownAttempts: 0, estimatedUsdUnknownAttempts: 0, reservedUsdUnknownAttempts: 0 });
+  s.totals = { ...s.totals, attempts: 0, completed: 0, incomplete: 0, failed: 0, unknown: 0, unsettled: 0,
+    usageUnknownAttempts: 0, inputTokens: 0, outputTokens: 0, cachedInputTokens: 0, reasoningOutputTokens: 0,
+    estimatedUsd: null, reservedUsd: null, estimatedUsdUnknownAttempts: 0, reservedUsdUnknownAttempts: 0 };
   const r = checkEnvelope({ envelope, summary: s, plannedReservedUsd: '0.786432000' });
   assert.equal(r.ok, true);
   assert.equal(r.usedRequests, 0);

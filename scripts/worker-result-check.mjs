@@ -142,8 +142,14 @@ function validateWorkerResult(result) {
   findingList(result.findings);
   stringList(result.blockers, 'blockers', 256);
 
-  if (result.verdict === 'pass' && (result.artifacts.length < 1 || executed < 1)) {
-    evidence('unsupported PASS: requires artifacts and executed tests');
+  const blockingFinding = result.findings.some((f) => f.severity === 'critical' || f.severity === 'major' || f.severity === 'minor');
+  if (result.verdict === 'pass') {
+    if (result.artifacts.length < 1 || executed < 1) {
+      evidence('unsupported PASS: requires artifacts and executed tests');
+    }
+    if (failed !== 0 || result.blockers.length !== 0 || blockingFinding) {
+      evidence('unsupported PASS: requires zero failed tests, no blockers, and no critical/major/minor findings');
+    }
   }
   if (result.verdict === 'fail' && result.findings.length < 1) {
     evidence('unsupported FAIL: requires at least one finding');

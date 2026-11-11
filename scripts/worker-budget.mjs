@@ -13,9 +13,11 @@ export const MODEL_LIMITS = Object.freeze({
 export const BUDGET_DEFAULTS = Object.freeze({ maxOutputTokens: 8192, timeoutMs: 60000 });
 export const BUDGET_CEILINGS = Object.freeze({ maxOutputTokens: 65536, timeoutMs: 600000 });
 
-// Every allowance keeps room for the actual answer below the reasoning budget, so a
-// reasoning-heavy model cannot consume the entire allowance before producing an artifact.
-export const FINAL_ANSWER_RESERVE = 4096;
+// Advisory answer headroom, not an enforced provider partition. The provider does not
+// expose a separate final-answer reserve; this is a planning assumption only.
+export const ANSWER_HEADROOM_TOKENS = 4096;
+// Compatibility alias for older callers.
+export const FINAL_ANSWER_RESERVE = ANSWER_HEADROOM_TOKENS;
 
 const ROLES = ['development', 'testing', 'review', 'debugging', 'correction'];
 const EFFORTS = ['none', 'low', 'high', 'max'];
@@ -63,10 +65,11 @@ export function planAllowance({ role, model, effort = 'high', complexity, risk,
     `tier ${tier} for ${role}/${model}/${effort}`,
     reasoningHeavy ? 'reasoning-heavy effort: allowance includes headroom above measured 8192 truncation point' : 'measured low/none-effort completions fit the default tier',
     priorTruncations ? `raised after ${priorTruncations} truncation(s); not a silent retry: requires fresh approval` : 'no prior truncation',
-    `final-answer reserve ${FINAL_ANSWER_RESERVE} tokens within allowance`,
+    `advisory answer headroom ${ANSWER_HEADROOM_TOKENS} tokens; not an enforced provider partition`,
     `within verified model limit ${limits.maxOutput} and policy ceilings ${BUDGET_CEILINGS.maxOutputTokens}/${BUDGET_CEILINGS.timeoutMs}`,
   ].join('; ');
   return { tier, maxOutputTokens: picked.maxOutputTokens, timeoutMs: picked.timeoutMs,
+    answerHeadroomTokens: ANSWER_HEADROOM_TOKENS,
     reserveFinalAnswer: FINAL_ANSWER_RESERVE, rationale, escalation: null };
 }
 

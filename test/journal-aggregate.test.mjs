@@ -79,12 +79,12 @@ test('result with null usage keeps usage unknown and does not fabricate zeros', 
   assert.equal(s.totals.inputTokens, 0);
 });
 
-test('R01: distinct request hashes under one approval/task are separate attempts', () => {
+test('R03: same approval/provider conflicting metadata is rejected; duplicate same-kind is rejected', () => {
   const r1 = result('SAME');
-  const r2 = result('SAME'); r2.requestSha256 = 'f'.repeat(64);
-  const s = summarizeAttempts([asLoaded(r1, 'result'), asLoaded(r2, 'result')]);
-  assert.equal(s.attempts, 2); // not merged by the approval-level fallback key
-  assert.equal(s.totals.inputTokens, 200);
+  const conflict = result('SAME'); conflict.model = 'deepseek-v4-pro';
+  assert.throws(() => summarizeAttempts([asLoaded(r1, 'result'), asLoaded(conflict, 'result')]), (error) => error?.code === 'E_JOURNAL_METADATA_MISMATCH');
+  const dup = result('SAME');
+  assert.throws(() => summarizeAttempts([asLoaded(r1, 'result'), asLoaded(dup, 'result')]), (error) => error?.code === 'E_JOURNAL_DUPLICATE');
 });
 
 test('R04: partially null usage counts as unknown without hiding known fields', () => {
